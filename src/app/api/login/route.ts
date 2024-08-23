@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import prisma from "../../../lib/prisma"; // Import the Prisma instance from your project
+import prisma from "../../../lib/prisma";
 
-// Define salt rounds for hashing (if needed elsewhere)
 const SALT_ROUNDS = 10;
 
 export async function POST(req: NextRequest) {
@@ -19,7 +18,6 @@ export async function POST(req: NextRequest) {
 
     console.log("Received POST request with:", { username, password });
 
-    // Fetch the user with the provided username using Prisma
     const user = await prisma.userCredentials.findUnique({
       where: { username },
       select: { password: true },
@@ -36,7 +34,6 @@ export async function POST(req: NextRequest) {
 
     const storedHashedPassword = user.password;
 
-    // Compare the provided password with the stored hashed password
     const isMatch = await bcrypt.compare(password, storedHashedPassword);
 
     if (isMatch) {

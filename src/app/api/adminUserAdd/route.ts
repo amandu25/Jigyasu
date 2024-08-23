@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import prisma from "../../../lib/prisma"; // Import the Prisma instance from your project
+import prisma from "../../../lib/prisma";
 
-// Define salt rounds for hashing
 const SALT_ROUNDS = 10;
 
 async function hashPassword(password: string): Promise<string> {
@@ -13,7 +12,6 @@ export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    // Validate input
     if (!username || !password) {
       return NextResponse.json(
         { error: "Username and password are required" },
@@ -21,7 +19,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if the username already exists
     const existingUser = await prisma.userCredentials.findUnique({
       where: { username },
     });
@@ -33,10 +30,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hash the password
     const hashedPassword = await hashPassword(password);
 
-    // Insert new user credentials
     await prisma.userCredentials.create({
       data: {
         username,
