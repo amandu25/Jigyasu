@@ -33,8 +33,5 @@ export function middleware(req: NextRequest) {
 
 // Specify the routes to apply the middleware to
 export const config = {
-  matcher: [
-    // Apply middleware to all routes except the login page
-    "/((?!login).*)",
-  ],
+  matcher: "/productList/:path*", // Apply middleware to /programList route and subroutes
 };
