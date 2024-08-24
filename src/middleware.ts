@@ -13,7 +13,7 @@ export function middleware(req: NextRequest) {
   if (!token) {
     console.log("No token found, redirecting to login");
 
-    return NextResponse.redirect("/login");
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
   try {
@@ -24,10 +24,10 @@ export function middleware(req: NextRequest) {
   } catch (error) {
     console.log("Invalid token, redirecting to login");
 
-    return NextResponse.redirect("/login");
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 }
 
 export const config = {
-  matcher: "/productList/:path*",
+  matcher: ["/productList/:path*"],
 };
