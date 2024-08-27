@@ -4,8 +4,8 @@ import prisma from "../../../lib/prisma";
 import jwt from "jsonwebtoken";
 
 const SALT_ROUNDS = 10;
-
-const JWT_SECRET = process.env.JWT_SECRET || "jigyasuToken";
+const JWT_SECRET = process.env.JWT_SECRET || "jigyasaToken";
+// console.log(JWT_SECRET);
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,10 +29,25 @@ export async function POST(req: NextRequest) {
     console.log("Database query executed. Result:", user);
 
     if (!user) {
-      return NextResponse.json(
+      // Generate an invalid token for unverified users
+      const invalidToken = jwt.sign({ username }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      const response = NextResponse.json(
         { message: "Invalid credentials" },
         { status: 401 }
       );
+
+      // Attach the invalid token to the response cookies
+      response.cookies.set("authToken", invalidToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60,
+        path: "/",
+      });
+
+      return response;
     }
 
     const storedHashedPassword = user.password;
@@ -52,10 +67,25 @@ export async function POST(req: NextRequest) {
 
       return response;
     } else {
-      return NextResponse.json(
+      // Generate an invalid token for unverified users
+      const invalidToken = jwt.sign({ username }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      const response = NextResponse.json(
         { message: "Invalid credentials" },
         { status: 401 }
       );
+
+      // Attach the invalid token to the response cookies
+      response.cookies.set("authToken", invalidToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60,
+        path: "/",
+      });
+
+      return response;
     }
   } catch (error) {
     console.error("Server error:", error);
